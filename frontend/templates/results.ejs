@@ -140,12 +140,81 @@
 
   <!-- Client-Side Script -->
   <script>
-    // Show the loading spinner immediately
-    document.getElementById('loadingSpinner').style.display = 'block';
+    const id = <%= id %>; // Unique ID for the current scan
+    const domain = "<%= domain %>"; // Domain being scanned
+    const Storage = window.localStorage;
+
+    let continue_fetch = true;
+
+    window.addEventListener('load', () => {
+      // Show the loading spinner immediately
+      document.getElementById('loadingSpinner').style.display = 'block';
+
+      // Localstorage setup
+      const saved_id = Storage.getItem('id');
+      if (!saved_id || saved_id !== id.toString()) {
+        // If there is no id yet or a different scan ID is stored, clear the storage and initialize it
+        Storage.clear();
+        Storage.setItem('id', id.toString());
+        Storage.setitem('emails', JSON.stringify([]));
+      } else {
+        // If the same ID is stored, keep the existing emails (this prevents loss of data on page reload)
+        const existingEmails = Storage.getItem('emails');
+        if (existingEmails) {
+          const emails = JSON.parse(existingEmails);
+          emails.forEach(email => addEmail(email));
+        }
+      }
+
+      fetch_emails();
+    });
+
+    /**
+     * This function fetches emails asynchronously from the server.
+     * It starts fetching emails every 2 seconds until the server indicates no more emails are available or an error occurs.
+     */
+    async function fetch_emails(){
+      try {
+        response = await fetch(`/api/fetch?id=${id}`)
+        if (response.status === 418){
+          continue_fetch = false;
+          return; // Stop fetching if the server indicates no more emails
+        }
+
+        if (!response.ok) {
+          continue_fetch = false;
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        if (data.emails && data.emails.length > 0) {
+          const existingEmails = JSON.parse(Storage.getItem('emails') || '[]');
+          // Add each email to the list and localStorage
+          data.emails.forEach(email => {
+            addEmail(email);
+            existingEmails.push(email);
+          });
+          
+          // Update localStorage with the new list of emails
+          Storage.setItem('emails', JSON.stringify(existingEmails));
+        }
+      } catch (error) {
+        console.error('Error fetching emails:', error);
+        continue_fetch = false;
+      } finally {
+        if (continue_fetch) {
+          // Continue fetching emails every 2 seconds
+          setTimeout(fetch_emails, 2000);
+        } else {
+          // Hide the spinner when done
+          document.getElementById('loadingSpinner').style.display = 'none';
+        }
+      }
+    }
 
     /**
      * Function to append a new email to the list.
-     * Call this (e.g., from your asynchronous logic) whenever an email is found.
+     * Should be called whenever an email is found.
      * @param {string} email - The email address to add
      */
     function addEmail(email) {
@@ -165,9 +234,6 @@
       `;
       listContainer.appendChild(card);
     }
-
-    // Example usage:
-    // addEmail('first@example.com');
   </script>
 </body>
 </html>
