@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Email Harvester • Enter Domain</title>
+  <title>Email Harvester • Enter Domain & Company</title>
   <!-- Local Bootstrap CSS -->
   <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Google Font -->
@@ -105,7 +105,7 @@
     <section class="hero">
       <div class="container">
         <h1>Discover Emails Instantly</h1>
-        <p>Enter a domain to uncover all publicly linked email addresses.</p>
+        <p>Enter a domain and company name to refine your search.</p>
         <a href="#input-section" class="btn btn-light btn-lg mt-3 shadow-sm">Get Started</a>
       </div>
     </section>
@@ -116,8 +116,25 @@
         <div class="col-lg-8 col-md-10">
           <div class="card card-form p-4">
             <div class="card-body">
-              <h3 class="card-title fw-bold text-center mb-4">Enter Your Domain</h3>
+              <h3 class="card-title fw-bold text-center mb-4">Enter Your Details</h3>
               <form action="/results" method="GET" id="domainForm">
+                <!-- Company Name Input -->
+                <div class="row g-3 mb-3">
+                  <div class="col-12">
+                    <div class="form-floating">
+                      <input
+                        type="text"
+                        class="form-control form-control-lg"
+                        id="companyInput"
+                        name="company"
+                        placeholder="Example Inc."
+                        required
+                      />
+                      <label for="companyInput">Company Name</label>
+                    </div>
+                  </div>
+                </div>
+                <!-- Domain Input & Submit Button -->
                 <div class="row g-3">
                   <div class="col-md-9">
                     <div class="form-floating">
@@ -134,7 +151,7 @@
                   </div>
                   <div class="col-md-3 d-grid">
                     <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
-                      Search Emails 
+                      Search Emails
                     </button>
                   </div>
                 </div>
@@ -161,7 +178,7 @@
         <div class="col-md-6 order-md-1">
           <h2 class="fw-bold mb-3">How It Works</h2>
           <p class="lead">
-            1. Submit a domain name (e.g., example.com).<br />
+            1. Submit a domain name (e.g., example.com) and your company name.<br />
             2. Our crawler scans public web pages under that domain.<br />
             3. We extract all linked email addresses and present them to you.
           </p>

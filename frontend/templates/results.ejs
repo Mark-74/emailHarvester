@@ -142,6 +142,7 @@
   <script>
     let id; // Unique ID for the current scan
     const domain = "<%= domain %>"; // Domain being scanned
+    const company = "<%= company %>"; // Company name for the scan
     const Storage = window.localStorage;
 
     let continue_fetch = true;
@@ -159,7 +160,7 @@
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ domain })
+          body: JSON.stringify({ domain, company })
         })).json()).id;
         if (!id) {
           console.error('Failed to fetch scan ID');
@@ -169,7 +170,7 @@
 
       // Localstorage setup
       const saved_id = Storage.getItem('id');
-      if (!saved_id || saved_id !== id) {
+      if (!saved_id || (id !== undefined && saved_id !== id)) {
         // If there is no id yet or a different scan ID is stored, clear the storage and initialize it
         Storage.clear();
         Storage.setItem('id', id);

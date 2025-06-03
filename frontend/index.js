@@ -25,17 +25,19 @@ app.get('/', async (req, res) => {
 
 app.get('/results', async (req, res) => {
     const domain = req.query.domain;
-    if (!domain) {
-        return res.status(400).send('Domain is required');
+    const company_name = req.query.company;
+    if (!domain || !company_name) {
+        return res.status(400).send('Domain and company name are required');
     }
 
-    res.render('results', { domain: domain });
+    res.render('results', { domain: domain, company: company_name });
 });
 
 app.post('/api/search', async (req, res) => {
     const domain = req.body.domain;
-    if (!domain) {
-        return res.status(400).send('Domain is required');
+    const company_name = req.body.company;
+    if (!domain || !company_name) {
+        return res.status(400).send('Domain and company name are required');
     }
 
     let fetch_id;
@@ -44,7 +46,7 @@ app.post('/api/search', async (req, res) => {
         const response = await fetch('http://backend:5000/api/search', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 'domain':domain })
+            body: JSON.stringify({ 'domain': domain, 'company': company_name })
         });
         const data = await response.json();
         fetch_id = data.id;
