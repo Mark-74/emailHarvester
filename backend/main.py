@@ -19,7 +19,7 @@ async def search():
 
 @app.route('/api/fetch', methods=['GET'])
 def fetch():
-    id = request.json.get('id')
+    id = request.args.get('id')
     if not id:
         return jsonify({"error": "ID parameter is required"}), 400
     d = json.load(open(f'./data/{id}.json', 'r'))

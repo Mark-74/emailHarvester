@@ -154,7 +154,17 @@
       // if the user just refreshed the page, it should not fetch a new id
       if (!saved_domain || saved_domain !== domain){
         // fetch the id
-        id = (await (await fetch('/api/search')).json()).get('id');
+        id = (await (await fetch('/api/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ domain })
+        })).json()).id;
+        if (!id) {
+          console.error('Failed to fetch scan ID');
+          return;
+        }
       }
 
       // Localstorage setup
@@ -164,7 +174,7 @@
         Storage.clear();
         Storage.setItem('id', id);
         Storage.setItem('domain', domain);
-        Storage.setitem('emails', JSON.stringify([]));
+        Storage.setItem('emails', JSON.stringify([]));
       } else {
         // If the same ID is stored, keep the existing emails (this prevents loss of data on page reload)
         id = saved_id;
