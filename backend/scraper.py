@@ -1,9 +1,14 @@
-import requests, re
+import requests, re, tqdm
 from bs4 import BeautifulSoup
 from googlesearch import search
 from urllib.parse import urlencode
 
-def scrape_website(url: str) -> list[str]:
+DEPTH_LIMIT = 10
+
+def scrape_website(url: str, depth=0) -> list[str]:
+    if depth >= DEPTH_LIMIT:
+        return []
+    
     email = r'[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'
     try:
         r = requests.get(url)
@@ -14,9 +19,11 @@ def scrape_website(url: str) -> list[str]:
     except requests.RequestException:
         return []
     values : list[str] = re.findall(email, r.text.lower())
-    # soup = BeautifulSoup(r.text, 'html.parser')
-    # for a in tqdm(soup.find_all('a', href=True), desc=f"Scraping {url}"):
-    #     values += scrape_website(a['href'])
+
+    # BFS search for more emails
+    soup = BeautifulSoup(r.text, 'html.parser')
+    for a in tqdm(soup.find_all('a', href=True), desc=f"Scraping {url}"):
+        values += scrape_website(a['href'], depth + 1)
     
     values = list(set(values))
     values = [v.lower().strip() for v in values] 
@@ -42,8 +49,3 @@ def scrape_dorks(domain: str) -> list[str]:
         values += scrape_website(url)
 
     return values
-
-if __name__ == "__main__":
-    domain = "cyberloop.it"
-    results = scrape_dorks(domain)
-    print(results)
