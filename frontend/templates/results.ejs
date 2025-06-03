@@ -186,7 +186,7 @@
         }
       }
 
-      fetch_emails();
+      setTimeout(fetch_emails, 2500);
     });
 
     /**
@@ -196,7 +196,7 @@
     async function fetch_emails(){
       try {
         response = await fetch(`/api/fetch?id=${id}`)
-        if (response.status !== 200 || response.status !== 418) {
+        if (response.status !== 200 && response.status !== 418) {
           continue_fetch = false;
           throw new Error('Network response was not ok');
         }

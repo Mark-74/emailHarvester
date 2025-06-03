@@ -69,12 +69,12 @@ app.get('/api/fetch', async (req, res) => {
 
     try {
         const response = await fetch(`http://backend:5000/api/fetch?id=${id}`);
-        if (response.status !== 200 || response.status !== 418) {
+        if (response.status !== 200 && response.status !== 418) {
             return res.status(response.status).json({ error: 'Failed to fetch data from backend' });
         }
         const data = await response.json();
         if (response.status === 418) {
-            return res.status(418).json({data});
+            return res.status(418).json(data);
         } else {
             return res.json(data);
         }

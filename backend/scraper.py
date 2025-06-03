@@ -6,14 +6,14 @@ from urllib.parse import urlencode
 DEPTH_LIMIT = 10
 
 async def handle_request(id: str, domain: str, company: str):
-    await init_data(id)
+    init_data(id)
 
-    await scrape_dorks(id, company)
+    await scrape_dorks(id, domain, company)
     await scrape_website(id, f'https://{domain}', set())
 
-    await save_data(id, [], 'completed')
+    save_data(id, [], 'completed')
 
-async def init_data(id: str):
+def init_data(id: str):
     data = {
         'status': 'pending',
         'emails': [],
@@ -22,7 +22,7 @@ async def init_data(id: str):
 
     json.dump(data, open(f'./data/{id}.json', 'w'))
     
-async def save_data(id: str, emails: list[str], status: str = 'pending'):
+def save_data(id: str, emails: list[str], status: str = 'pending'):
     with open(f'./data/{id}.json', 'r') as f:
         d = json.load(f)
 
@@ -54,7 +54,7 @@ async def scrape_website(id, url: str, visited: set, depth=0) -> list[str]:
         return
     
     values = re.findall(email, r.text.lower())
-    await save_data(id, values)
+    save_data(id, values)
 
     # BFS search for more emails
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -75,7 +75,7 @@ async def scrape_website(id, url: str, visited: set, depth=0) -> list[str]:
         assert isinstance(a['href'], str), a['href']
         await scrape_website(id, a['href'], visited, depth + 1)
 
-async def scrape_dorks(id: str, company: str) -> list[str]:
+async def scrape_dorks(id: str, domain: str, company: str) -> list[str]:
     query = f'site:linkedin.com/in "{company}" AND ("email" OR "contact")'
     url = f"https://www.google.com/search?{urlencode({'q': query})}"
 
@@ -104,7 +104,7 @@ async def scrape_dorks(id: str, company: str) -> list[str]:
 
         values.extend(mails)
     
-    await save_data(id, values)
+    save_data(id, values)
 
 if __name__ == "__main__":
     import asyncio, os
