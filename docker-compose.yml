@@ -1,0 +1,27 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    volumes:
+      - ./frontend/templates:/app/templates
+      - ./frontend/static:/app/static
+    env_file:
+      - ./frontend/env/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+  
+  backend:
+    build: 
+      context: ./backend
+    container_name: backend
+    env_file:
+      - ./backend/env/.env
+    restart: unless-stopped
+  
+volumes:
+  templates:
+  static:
