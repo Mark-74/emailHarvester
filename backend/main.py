@@ -1,19 +1,20 @@
 import json, asyncio
 from uuid import uuid4
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify
 from scraper import handle_request
 
 app = Flask(__name__)
 
 @app.route('/api/search', methods=['POST'])
 async def search():
+    company = request.json.get('company')
     domain = request.json.get('domain')
 
     if not domain:
         return jsonify({"error": "Domain parameter is required"}), 400
-
+    
     id = str(uuid4())
-    asyncio.run_coroutine_threadsafe(handle_request(domain, id), asyncio.get_event_loop())
+    asyncio.run_coroutine_threadsafe(handle_request(domain, company, id), asyncio.get_event_loop())
 
     return jsonify({'id': id})
 
@@ -22,15 +23,19 @@ def fetch():
     id = request.args.get('id')
     if not id:
         return jsonify({"error": "ID parameter is required"}), 400
-    d = json.load(open(f'./data/{id}.json', 'r'))
+    
+    try:
+        d = json.load(open(f'./data/{id}.json', 'r'))
+    except:
+        return jsonify({"error": "No data found for the given ID"}), 404
     
     idx = d.get('index')
     status = d.get('status', 'pending')
     emails = d.get('emails', [])
 
     if not idx:
-        return jsonify({"error": "No data found for the given ID"}), 500
-    
+        return jsonify({"error": "No data found for the given ID"}), 404
+
     if idx >= len(emails):
         return jsonify([]), 200
 

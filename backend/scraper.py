@@ -1,75 +1,115 @@
-import requests
-import tqdm
-import json
-import re
+import requests, json, re
 from bs4 import BeautifulSoup
 from googlesearch import search
 from urllib.parse import urlencode
 
 DEPTH_LIMIT = 10
 
-async def handle_request(url: str, id: str):
-    emails = scrape_website(url, set())
-    emails += scrape_dorks(url)
+async def handle_request(id: str, domain: str, company: str):
+    await init_data(id)
 
-    with open(f'./data/{id}.json', 'r+') as f:
-        d = json.load(f)
-        d['status'] = 'completed'
-        f.seek(0)
-        json.dump(d, f)
-        f.truncate()
+    await scrape_dorks(id, company)
+    await scrape_website(id, f'https://{domain}', set())
 
+    await save_data(id, [], 'completed')
+
+async def init_data(id: str):
+    data = {
+        'status': 'pending',
+        'emails': [],
+        'index': 0
+    }
+
+    json.dump(data, open(f'./data/{id}.json', 'w'))
     
-async def save_data(id: str, emails: list[str]):
-    with open(f'./data/{id}.json', 'r+') as f:
+async def save_data(id: str, emails: list[str], status: str = 'pending'):
+    with open(f'./data/{id}.json', 'r') as f:
         d = json.load(f)
-        d['emails'] += emails
-        f.seek(0)
-        json.dump(d, f)
-        f.truncate()
 
-async def scrape_website(url: str, visited: set, depth=0) -> list[str]:
+        values = [v.lower().strip() for v in emails]
+        values.extend(d['emails'])
+        values = list(set(values))
+
+        d['emails'] = values
+        d['status'] = status
+
+    json.dump(d, open(f'./data/{id}.json', 'w'))
+
+async def scrape_website(id, url: str, visited: set, depth=0) -> list[str]:
     if depth >= DEPTH_LIMIT or url in visited:
-        return []
+        return
 
+    print(f'Scraping {url} at depth {depth}', flush=True)
+    domain = url.split('//')[1]
     visited.add(url)
     email = r'[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'
+
     try:
         r = requests.get(url)
         if r.status_code != 200:
-            return []
+            return
         if r.headers.get('Content-Type') != 'text/html':
-            return []
+            return
     except requests.RequestException:
-        return []
-    values : list[str] = re.findall(email, r.text.lower())
+        return
+    
+    values = re.findall(email, r.text.lower())
+    await save_data(id, values)
 
     # BFS search for more emails
     soup = BeautifulSoup(r.text, 'html.parser')
-    for a in tqdm(soup.find_all('a', href=True), desc=f"Scraping {url}"):
-        values += scrape_website(a['href'], visited, depth + 1)
+    for a in soup.find_all(href=True):
+        if a['href'].startswith('/'):
+            a['href'] = url + a['href']
+        if not domain in a['href']:
+            continue
+        if not a['href'].startswith('http'):
+            continue
+        if '#' in a['href']:
+            a['href'] = a['href'].split('#')[0]
 
-    values = list(set(values))
-    values = [v.lower().strip() for v in values] 
+        while a['href'].endswith('/'):
+            a['href'] = a['href'][:-1]
 
-    return values
+        
+        assert isinstance(a['href'], str), a['href']
+        await scrape_website(id, a['href'], visited, depth + 1)
 
-async def scrape_dorks(domain: str) -> list[str]:
-    query = f"site:{domain} intext:@{domain}"
-    url = f"https://google.co.in/search?{urlencode({'q': query})}"
+async def scrape_dorks(id: str, company: str) -> list[str]:
+    query = f'site:linkedin.com/in "{company}" AND ("email" OR "contact")'
+    url = f"https://www.google.com/search?{urlencode({'q': query})}"
 
     try:
         r = requests.get(url)
         if r.status_code != 200:
-            return []
+            print(f"Failed to fetch dorks for {company}. Status code: {r.status_code}", flush=True)
+            return
     except:
-        return []
+        return
 
-    res = search(query, num_results=10) 
+    res = search(query, num_results=50)
     values = []
     for url in res:
-        if domain not in url:
-            continue
-        values += scrape_website(url, set())
+        data = url.split('/in/')[1].split('-')
 
-    return values
+        if len(data) < 2:
+            continue
+        firstname, lastname = data[:2]
+
+        mails = [
+            f'{firstname}.{lastname}@{domain}',
+            f'{firstname[0]}.{lastname}@{domain}',
+            f'{firstname}{lastname}@{domain}',
+        ]
+
+        values.extend(mails)
+    
+    await save_data(id, values)
+
+if __name__ == "__main__":
+    import asyncio, os
+    domain = "cyberloop.it"
+    company = "Cyberloop"
+    id = os.urandom(16).hex()
+    asyncio.run(handle_request(id, domain, company))
+    print(f"Scraping completed for {domain} with ID {id}.")
