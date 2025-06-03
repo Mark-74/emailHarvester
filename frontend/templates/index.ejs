@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Email Harvester • Enter Domain</title>
+  <!-- Local Bootstrap CSS -->
+  <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f1f3f5;
+    }
+    main {
+      flex: 1;
+    }
+    .hero {
+      background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+      color: #ffffff;
+      padding: 5rem 0;
+      text-align: center;
+    }
+    .hero h1 {
+      font-weight: 700;
+      font-size: 3.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .hero p {
+      font-weight: 300;
+      font-size: 1.25rem;
+    }
+    .form-container {
+      margin-top: -3rem;
+      z-index: 10;
+      position: relative;
+    }
+    .card-form {
+      border-radius: 1rem;
+      box-shadow: 0 2rem 3rem rgba(0, 0, 0, 0.1);
+    }
+    footer {
+      background-color: #343a40;
+      color: #ced4da;
+      text-align: center;
+      padding: 1.5rem 0;
+    }
+    footer a {
+      color: #adb5bd;
+      text-decoration: none;
+    }
+    footer a:hover {
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">EmailHarvester</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#how-it-works">How It Works</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#about">About</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Wrapper -->
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1>Discover Emails Instantly</h1>
+        <p>Enter a domain to uncover all publicly linked email addresses.</p>
+        <a href="#input-section" class="btn btn-light btn-lg mt-3 shadow-sm">Get Started</a>
+      </div>
+    </section>
+
+    <!-- Input Form Section -->
+    <section id="input-section" class="form-container container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+          <div class="card card-form p-4">
+            <div class="card-body">
+              <h3 class="card-title fw-bold text-center mb-4">Enter Your Domain</h3>
+              <form action="/results" method="GET" id="domainForm">
+                <div class="row g-3">
+                  <div class="col-md-9">
+                    <div class="form-floating">
+                      <input
+                        type="text"
+                        class="form-control form-control-lg"
+                        id="domainInput"
+                        name="domain"
+                        placeholder="example.com"
+                        required
+                      />
+                      <label for="domainInput">e.g., example.com</label>
+                    </div>
+                  </div>
+                  <div class="col-md-3 d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                      Search Emails 
+                    </button>
+                  </div>
+                </div>
+              </form>
+              <small class="text-muted d-block text-center mt-3">
+                We’ll crawl publicly accessible pages—no sign-up required.
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="container py-5">
+      <div class="row align-items-center">
+        <div class="col-md-6 order-md-2 mb-4 mb-md-0 text-center">
+          <img
+            src="https://placehold.co/600x400?text=Email+Graphic"
+            alt="Crawling illustration"
+            class="img-fluid rounded shadow"
+          />
+        </div>
+        <div class="col-md-6 order-md-1">
+          <h2 class="fw-bold mb-3">How It Works</h2>
+          <p class="lead">
+            1. Submit a domain name (e.g., example.com).<br />
+            2. Our crawler scans public web pages under that domain.<br />
+            3. We extract all linked email addresses and present them to you.
+          </p>
+          <ul class="list-group list-group-flush mt-4">
+            <li class="list-group-item border-0 ps-0">
+              <i class="bi bi-speedometer2 text-primary me-2"></i>Fast & Accurate
+            </li>
+            <li class="list-group-item border-0 ps-0">
+              <i class="bi bi-lock-fill text-primary me-2"></i>Secure & Private
+            </li>
+            <li class="list-group-item border-0 ps-0">
+              <i class="bi bi-people-fill text-primary me-2"></i>No Signup Required
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="container py-5">
+      <div class="text-center mb-4">
+        <h2 class="fw-bold">About EmailHarvester</h2>
+        <p class="text-muted">
+          EmailHarvester was built for marketers, researchers, and networkers who
+          need to quickly gather public-facing email addresses from any website.
+          We prioritize speed, accuracy, and privacy—no data is stored
+          long-term.
+        </p>
+      </div>
+      <div class="row text-center">
+        <div class="col-md-4 mb-4">
+          <div class="p-4 bg-white rounded shadow-sm h-100">
+            <i class="bi bi-shield-fill-check text-primary fs-1 mb-3"></i>
+            <h5 class="fw-semibold">Privacy Focused</h5>
+            <p class="mb-0 text-muted">
+              We only scan publicly accessible pages and never store
+              information beyond the session.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="p-4 bg-white rounded shadow-sm h-100">
+            <i class="bi bi-lightning-charge-fill text-primary fs-1 mb-3"></i>
+            <h5 class="fw-semibold">Lightning Fast</h5>
+            <p class="mb-0 text-muted">
+              Our crawler is optimized for speed, delivering results in seconds.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="p-4 bg-white rounded shadow-sm h-100">
+            <i class="bi bi-people-fill text-primary fs-1 mb-3"></i>
+            <h5 class="fw-semibold">No Signup Required</h5>
+            <p class="mb-0 text-muted">
+              Simply enter a domain and get results—no account or payment needed.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p class="mb-1">&copy; 2025 EmailHarvester. All Rights Reserved.</p>
+      <p>
+        Built with <a href="https://getbootstrap.com/">Bootstrap 5</a>.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Local Bootstrap JS & Dependencies -->
+  <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="/bootstrap-icons/font/bootstrap-icons.css"
+  />
+</body>
+</html>

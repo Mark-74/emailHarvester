@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Email Harvester • Results for <%= domain %></title>
+  <!-- Local Bootstrap CSS -->
+  <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f1f3f5;
+    }
+    .hero-results {
+      background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+      color: #ffffff;
+      padding: 4rem 0;
+      text-align: center;
+    }
+    .hero-results h1 {
+      font-weight: 700;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .hero-results p {
+      font-weight: 300;
+      font-size: 1.1rem;
+    }
+    main {
+      flex: 1;
+    }
+    #emailList .card {
+      border-radius: 0.75rem;
+      box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.05);
+      margin-bottom: 1rem;
+    }
+    #loadingSpinner {
+      display: none;
+    }
+    footer {
+      background-color: #343a40;
+      color: #ced4da;
+      text-align: center;
+      padding: 1.5rem 0;
+    }
+    footer a {
+      color: #adb5bd;
+      text-decoration: none;
+    }
+    footer a:hover {
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/">EmailHarvester</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/#how-it-works">How It Works</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/#about">About</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Results Section -->
+  <section class="hero-results">
+    <div class="container">
+      <h1>Results for "<%= domain %>"</h1>
+      <p class="fw-light">Fetching public email addresses…</p>
+      <a href="/" class="btn btn-light btn-lg mt-3 shadow-sm">Search Again</a>
+    </div>
+  </section>
+
+  <!-- Results List -->
+  <main class="container py-5">
+    <div id="emailList">
+      <!-- Email cards will be appended here -->
+    </div>
+    <div id="loadingSpinner" class="text-center mt-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Still scanning…</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p class="mb-1">&copy; 2025 EmailHarvester. All Rights Reserved.</p>
+      <p>
+        Built with <a href="https://getbootstrap.com/">Bootstrap 5</a>.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Local Bootstrap JS & Dependencies -->
+  <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap Icons -->
+  <link
+    rel="stylesheet"
+    href="/bootstrap-icons/font/bootstrap-icons.css"
+  />
+
+  <!-- Client-Side Script -->
+  <script>
+    // Show the loading spinner immediately
+    document.getElementById('loadingSpinner').style.display = 'block';
+
+    /**
+     * Function to append a new email to the list.
+     * Call this (e.g., from your asynchronous logic) whenever an email is found.
+     * @param {string} email - The email address to add
+     */
+    function addEmail(email) {
+      // Hide spinner once the first email arrives
+      document.getElementById('loadingSpinner').style.display = 'none';
+
+      const listContainer = document.getElementById('emailList');
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <span class="fw-medium">${email}</span>
+          <a href="mailto:${email}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-envelope-fill me-1"></i>Email
+          </a>
+        </div>
+      `;
+      listContainer.appendChild(card);
+    }
+
+    // Example usage:
+    // addEmail('first@example.com');
+  </script>
+</body>
+</html>
