@@ -1,4 +1,4 @@
-import json
+import json, asyncio
 from uuid import uuid4
 from flask import Flask, request, jsonify, send_file
 from scraper import handle_request
@@ -13,7 +13,7 @@ async def search():
         return jsonify({"error": "Domain parameter is required"}), 400
 
     id = str(uuid4())
-    handle_request(domain, id)
+    asyncio.run_coroutine_threadsafe(handle_request(domain, id), asyncio.get_event_loop())
 
     return jsonify({'id': id})
 

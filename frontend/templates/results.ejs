@@ -140,25 +140,34 @@
 
   <!-- Client-Side Script -->
   <script>
-    const id = <%= id %>; // Unique ID for the current scan
+    let id; // Unique ID for the current scan
     const domain = "<%= domain %>"; // Domain being scanned
     const Storage = window.localStorage;
 
     let continue_fetch = true;
 
-    window.addEventListener('load', () => {
+    window.addEventListener('load', async () => {
       // Show the loading spinner immediately
       document.getElementById('loadingSpinner').style.display = 'block';
 
+      const saved_domain = Storage.getItem('domain');
+      // if the user just refreshed the page, it should not fetch a new id
+      if (!saved_domain || saved_domain !== domain){
+        // fetch the id
+        id = (await (await fetch('/api/search')).json()).get('id');
+      }
+
       // Localstorage setup
       const saved_id = Storage.getItem('id');
-      if (!saved_id || saved_id !== id.toString()) {
+      if (!saved_id || saved_id !== id) {
         // If there is no id yet or a different scan ID is stored, clear the storage and initialize it
         Storage.clear();
-        Storage.setItem('id', id.toString());
+        Storage.setItem('id', id);
+        Storage.setItem('domain', domain);
         Storage.setitem('emails', JSON.stringify([]));
       } else {
         // If the same ID is stored, keep the existing emails (this prevents loss of data on page reload)
+        id = saved_id;
         const existingEmails = Storage.getItem('emails');
         if (existingEmails) {
           const emails = JSON.parse(existingEmails);

@@ -29,6 +29,15 @@ app.get('/results', async (req, res) => {
         return res.status(400).send('Domain is required');
     }
 
+    res.render('results', { domain: domain });
+});
+
+app.post('/api/search', async (req, res) => {
+    const domain = req.body.domain;
+    if (!domain) {
+        return res.status(400).send('Domain is required');
+    }
+
     let fetch_id;
 
     try {
@@ -46,8 +55,8 @@ app.get('/results', async (req, res) => {
     } catch (error) {
         return res.status(500).json({error: error.message});
     }
-    
-    res.render('results', { domain: domain, id: fetch_id });
+
+    res.json({ id: fetch_id });
 });
 
 app.get('/api/fetch', async (req, res) => {
