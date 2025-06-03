@@ -1,4 +1,5 @@
 flask
+flask[async]
 googlesearch-python
 beautifulsoup4
 tqdm

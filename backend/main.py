@@ -39,4 +39,4 @@ def fetch():
     return jsonify(emails[idx:]), 418 if status != 'pending' else 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=True)

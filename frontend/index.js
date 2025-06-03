@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const dotenv = require('dotenv');
+const { METHODS } = require('http');
 
 dotenv.config();
 
@@ -28,15 +29,24 @@ app.get('/results', async (req, res) => {
         return res.status(400).send('Domain is required');
     }
 
+    let fetch_id;
+
     try {
-        const fetch_id = (await (await fetch('http://backend/api/fetch')).json()).get('id');
+        const response = await fetch('http://backend:5000/api/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 'domain':domain })
+        });
+        const data = await response.json();
+        fetch_id = data.id;
+
         if (!fetch_id) {
             return res.status(500).send('Failed to fetch data');
         }
     } catch (error) {
         return res.status(500).json({error: error.message});
     }
-
+    
     res.render('results', { domain: domain, id: fetch_id });
 });
 
@@ -47,12 +57,16 @@ app.get('/api/fetch', async (req, res) => {
     }
 
     try {
-        const response = await fetch(`http://backend/api/fetch?id=${id}`);
-        if (!response.ok) {
+        const response = await fetch(`http://backend:5000/api/fetch?id=${id}`);
+        if (response.status !== 200 || response.status !== 418) {
             return res.status(response.status).json({ error: 'Failed to fetch data from backend' });
         }
         const data = await response.json();
-        res.json(data);
+        if (response.status === 418) {
+            return res.status(418).json({data});
+        } else {
+            return res.json(data);
+        }
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

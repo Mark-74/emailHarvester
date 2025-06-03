@@ -176,14 +176,13 @@
     async function fetch_emails(){
       try {
         response = await fetch(`/api/fetch?id=${id}`)
-        if (response.status === 418){
-          continue_fetch = false;
-          return; // Stop fetching if the server indicates no more emails
-        }
-
-        if (!response.ok) {
+        if (response.status !== 200 || response.status !== 418) {
           continue_fetch = false;
           throw new Error('Network response was not ok');
+        }
+
+        if (response.status === 418){
+          continue_fetch = false; // Stop fetching if the server indicates no more emails
         }
 
         const data = await response.json();
