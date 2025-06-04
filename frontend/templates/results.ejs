@@ -144,6 +144,9 @@
     const domain = "<%= domain %>"; // Domain being scanned
     const company = "<%= company %>"; // Company name for the scan
     const Storage = window.localStorage;
+    const DEBUG = <%= debug %>; // Debug mode flag
+
+    if (DEBUG) Storage.clear();
 
     let continue_fetch = true;
 
@@ -206,10 +209,11 @@
         }
 
         const data = await response.json();
-        if (data.emails && data.emails.length > 0) {
+        if (data && data.length > 0) {
           const existingEmails = JSON.parse(Storage.getItem('emails') || '[]');
           // Add each email to the list and localStorage
-          data.emails.forEach(email => {
+          console.log(data);
+          data.forEach(email => {
             addEmail(email);
             existingEmails.push(email);
           });
@@ -237,9 +241,6 @@
      * @param {string} email - The email address to add
      */
     function addEmail(email) {
-      // Hide spinner once the first email arrives
-      document.getElementById('loadingSpinner').style.display = 'none';
-
       const listContainer = document.getElementById('emailList');
       const card = document.createElement('div');
       card.className = 'card';

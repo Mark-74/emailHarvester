@@ -26,11 +26,12 @@ app.get('/', async (req, res) => {
 app.get('/results', async (req, res) => {
     const domain = req.query.domain;
     const company_name = req.query.company;
+    const debug = req.query.debug === 'true';
     if (!domain || !company_name) {
         return res.status(400).send('Domain and company name are required');
     }
 
-    res.render('results', { domain: domain, company: company_name });
+    res.render('results', { domain: domain, company: company_name, debug: debug });
 });
 
 app.post('/api/search', async (req, res) => {
