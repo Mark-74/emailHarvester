@@ -43,10 +43,23 @@
     main {
       flex: 1;
     }
-    #emailList .card {
+    /* Scrollable box for email lists */
+    .email-box {
+      max-height: 400px;      /* Adjust height as needed */
+      overflow-y: auto;
+      background-color: #ffffff;
+      border: 1px solid #dee2e6;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+      margin-bottom: 1.5rem;
+    }
+    /* Card styling inside the scrollable boxes */
+    #secureEmailList .card,
+    #predictedEmailList .card {
       border-radius: 0.75rem;
       box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.05);
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
     }
     #loadingSpinner {
       display: none;
@@ -104,14 +117,31 @@
       <h1>Results for "<%= domain %>"</h1>
       <p class="fw-light">Fetching public email addresses…</p>
       <a href="/" class="btn btn-light btn-lg mt-3 shadow-sm">Search Again</a>
+      <button id="downloadBtn" class="btn btn-light btn-lg mt-3 ms-2 shadow-sm">
+        Download JSON
+      </button>
     </div>
   </section>
 
   <!-- Results List -->
   <main class="container py-5">
-    <div id="emailList">
-      <!-- Email cards will be appended here -->
+    <!-- Secure Emails Box -->
+    <h5 class="mb-2">Secure Emails</h5>
+    <div class="email-box">
+      <div id="secureEmailList">
+        <!-- Secure email cards will be appended here -->
+      </div>
     </div>
+
+    <!-- predicted Emails Box -->
+    <h5 class="mb-2">predicted Emails</h5>
+    <div class="email-box">
+      <div id="predictedEmailList">
+        <!-- predicted email cards will be appended here -->
+      </div>
+    </div>
+
+    <!-- Loading Spinner -->
     <div id="loadingSpinner" class="text-center mt-4">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -138,7 +168,7 @@
     href="/bootstrap-icons/font/bootstrap-icons.css"
   />
 
-  <!-- Client-Side Script -->
+  <!-- Client-Side Script remains unchanged -->
   <script>
     let id; // Unique ID for the current scan
     const domain = "<%= domain %>"; // Domain being scanned
@@ -156,7 +186,7 @@
 
       const saved_domain = Storage.getItem('domain');
       // if the user just refreshed the page, it should not fetch a new id
-      if (!saved_domain || saved_domain !== domain){
+      if (!saved_domain || saved_domain !== domain) {
         // fetch the id
         id = (await (await fetch('/api/search', {
           method: 'POST',
@@ -185,7 +215,7 @@
         const existingEmails = Storage.getItem('emails');
         if (existingEmails) {
           const emails = JSON.parse(existingEmails);
-          emails.forEach(email => addEmail(email));
+          emails.forEach(item => addEmail(item.email, item.type));
         }
       }
 
@@ -196,28 +226,33 @@
      * This function fetches emails asynchronously from the server.
      * It starts fetching emails every 2 seconds until the server indicates no more emails are available or an error occurs.
      */
-    async function fetch_emails(){
+    async function fetch_emails() {
       try {
-        response = await fetch(`/api/fetch?id=${id}`)
+        const response = await fetch(`/api/fetch?id=${id}`);
         if (response.status !== 200 && response.status !== 418) {
           continue_fetch = false;
           throw new Error('Network response was not ok');
         }
 
-        if (response.status === 418){
+        if (response.status === 418) {
           continue_fetch = false; // Stop fetching if the server indicates no more emails
         }
 
         const data = await response.json();
-        if (data && data.length > 0) {
+        // update only if there are new emails
+        if (data && (data.secure.length > 0 || data.predicted.length > 0)) {
           const existingEmails = JSON.parse(Storage.getItem('emails') || '[]');
-          // Add each email to the list and localStorage
-          console.log(data);
-          data.forEach(email => {
-            addEmail(email);
-            existingEmails.push(email);
+          // Add each email to the respective list and localStorage
+          data.secure.forEach(email => {
+            addEmail(email, 'secure');
+            existingEmails.push({email, type: 'secure'});
           });
-          
+
+          data.predicted.forEach(email => {
+            addEmail(email, 'predicted');
+            existingEmails.push({email, type: 'predicted'});
+          });
+
           // Update localStorage with the new list of emails
           Storage.setItem('emails', JSON.stringify(existingEmails));
         }
@@ -236,12 +271,13 @@
     }
 
     /**
-     * Function to append a new email to the list.
-     * Should be called whenever an email is found.
+     * Function to append a new email to the appropriate list.
      * @param {string} email - The email address to add
+     * @param {string} type - 'secure' or 'predicted'
      */
-    function addEmail(email) {
-      const listContainer = document.getElementById('emailList');
+    function addEmail(email, type) {
+      const listId = type === 'secure' ? 'secureEmailList' : 'predictedEmailList';
+      const listContainer = document.getElementById(listId);
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
@@ -254,6 +290,20 @@
       `;
       listContainer.appendChild(card);
     }
+
+    // Download JSON button handler
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const allEmails = Storage.getItem('emails') || '[]';
+      const blob = new Blob([allEmails], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${domain}_emails.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
   </script>
 </body>
 </html>

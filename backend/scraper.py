@@ -28,7 +28,7 @@ def init_data(id: str):
 
     json.dump(data, open(f'./data/{id}.json', 'w'))
     
-def save_data(id: str, emails: list[str], predicted: bool = True, status: str = 'pending'):
+def save_data(id: str, emails: list[str], predicted: bool = False, status: str = 'pending'):
     predicted = 'predicted' if predicted else 'secure'
     with open(f'./data/{id}.json', 'r') as f:
         d = json.load(f)
