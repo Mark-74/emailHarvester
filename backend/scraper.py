@@ -4,12 +4,21 @@ from googlesearch import search
 from urllib.parse import urlencode
 
 DEPTH_LIMIT = 10
+PROXIES = {
+    'http':  'socks5h://localhost:9050',
+    'https': 'socks5h://localhost:9050'
+}
 
 async def handle_request(id: str, domain: str, company: str):
     init_data(id)
 
     await scrape_dorks(id, domain, company)
     await scrape_website(id, f'https://{domain}', set())
+
+    if test_tor_connection():
+        onions = json.load(open('static.json'))
+        for onion in onions:
+            await scrape_website(id, onion, set())
 
     save_data(id, [], status='completed')
 
@@ -42,6 +51,13 @@ def save_data(id: str, emails: list[str], predicted: bool = False, status: str =
 
     json.dump(d, open(f'./data/{id}.json', 'w'))
 
+def test_tor_connection():
+    try:
+        requests.get('http://httpbin.org/ip', proxies=PROXIES)
+    except:
+        return False
+    return True
+
 async def scrape_website(id, url: str, visited: set, depth=0) -> list[str]:
     if depth >= DEPTH_LIMIT or url in visited:
         return
@@ -51,7 +67,7 @@ async def scrape_website(id, url: str, visited: set, depth=0) -> list[str]:
     email = r'[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'
 
     try:
-        r = requests.get(url)
+        r = requests.get(url, proxies=PROXIES)
         if r.status_code != 200:
             return
         if r.headers.get('Content-Type') != 'text/html':
@@ -111,11 +127,3 @@ async def scrape_dorks(id: str, domain: str, company: str) -> list[str]:
         values.extend(mails)
     
     save_data(id, values, predicted=True)
-
-if __name__ == "__main__":
-    import asyncio, os
-    domain = "cyberloop.it"
-    company = "Cyberloop"
-    id = os.urandom(16).hex()
-    asyncio.run(handle_request(id, domain, company))
-    print(f"Scraping completed for {domain} with ID {id}.")
