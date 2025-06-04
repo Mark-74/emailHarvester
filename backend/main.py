@@ -33,13 +33,14 @@ def fetch():
         return jsonify({"error": "ID parameter is required"}), 400
     
     try:
-        d = json.load(open(f'./data/{id}.json', 'r'))
+        data = json.load(open(f'./data/{id}/status.json', 'r'))
+        index = json.load(open(f'./data/{id}/index.json', 'r'))
     except:
         return jsonify({"error": "No data found for the given ID"}), 404
 
-    secidx, predidx = d.get('index').values()
-    status = d.get('status', 'pending')
-    emails = d.get('emails', {'secure': [], 'predicted': []})
+    secidx, predidx = index.values()
+    status = data.get('status', 'pending')
+    emails = data.get('emails', {'secure': [], 'predicted': []})
 
     predicted, secure = [], []
     if secidx < len(emails['secure']) :
@@ -49,8 +50,8 @@ def fetch():
         predicted = emails['predicted'][predidx:]
         predidx = len(emails['predicted'])
 
-    d['index'] = {'secure': secidx, 'predicted': predidx}
-    json.dump(d, open(f'./data/{id}.json', 'w'))
+    index = {'secure': secidx, 'predicted': predidx}
+    json.dump(index, open(f'./data/{id}/index.json', 'w'))
     return jsonify({'secure': secure, 'predicted': predicted}), 200 if status == 'pending' else 418
 
 if __name__ == '__main__':

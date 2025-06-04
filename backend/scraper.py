@@ -1,4 +1,4 @@
-import requests, json, re
+import requests, json, re, os
 from bs4 import BeautifulSoup
 from googlesearch import search
 from urllib.parse import urlencode
@@ -23,23 +23,27 @@ async def handle_request(id: str, domain: str, company: str):
     save_data(id, [], status='completed')
 
 def init_data(id: str):
+    os.makedirs(f'./data/{id}', exist_ok=True)
+
     data = {
         'status': 'pending',
         'emails': {
             'secure': [],
             'predicted': []
-        },
-        'index': {
-            'secure': 0,
-            'predicted': 0
         }
     }
+    
+    json.dump(data, open(f'./data/{id}/status.json', 'w'))
 
-    json.dump(data, open(f'./data/{id}.json', 'w'))
+    data = {
+        'secure': 0,
+        'predicted': 0
+    }
+    json.dump(data, open(f'./data/{id}/index.json', 'w'))
     
 def save_data(id: str, emails: list[str], predicted: bool = False, status: str = 'pending'):
     predicted = 'predicted' if predicted else 'secure'
-    with open(f'./data/{id}.json', 'r') as f:
+    with open(f'./data/{id}/status.json', 'r') as f:
         d = json.load(f)
 
         values = [v.lower().strip() for v in emails]
@@ -49,7 +53,7 @@ def save_data(id: str, emails: list[str], predicted: bool = False, status: str =
         d['emails'][predicted] = values
         d['status'] = status
 
-    json.dump(d, open(f'./data/{id}.json', 'w'))
+    json.dump(d, open(f'./data/{id}/status.json', 'w'))
 
 def test_tor_connection():
     try:
