@@ -37,19 +37,21 @@ def fetch():
     except:
         return jsonify({"error": "No data found for the given ID"}), 404
 
-    idx = d.get('index')
+    secidx, predidx = d.get('index').values()
     status = d.get('status', 'pending')
-    emails = d.get('emails', [])
+    emails = d.get('emails', {'secure': [], 'predicted': []})
 
-    if not isinstance(idx, int):
-        return jsonify({"error": "No data found for the given ID"}), 404
+    predicted, secure = [], []
+    if secidx < len(emails['secure']) :
+        secure = emails['secure'][secidx:]
+        secidx = len(emails['secure'])
+    if predidx < len(emails['predicted']):
+        predicted = emails['predicted'][predidx:]
+        predidx = len(emails['predicted'])
 
-    if idx >= len(emails):
-        return jsonify([]), 200 if status == 'pending' else 418
-
-    d['index'] = len(emails)
+    d['index'] = {'secure': secidx, 'predicted': predidx}
     json.dump(d, open(f'./data/{id}.json', 'w'))
-    return jsonify(emails[idx:]), 200
+    return jsonify({'secure': secure, 'predicted': predicted}), 200 if status == 'pending' else 418
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)

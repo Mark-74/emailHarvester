@@ -17,15 +17,19 @@ def init_data(id: str):
     data = {
         'status': 'pending',
         'emails': {
-            True: [],
-            False: []
+            'secure': [],
+            'predicted': []
         },
-        'index': 0
+        'index': {
+            'secure': 0,
+            'predicted': 0
+        }
     }
 
     json.dump(data, open(f'./data/{id}.json', 'w'))
     
 def save_data(id: str, emails: list[str], predicted: bool = True, status: str = 'pending'):
+    predicted = 'predicted' if predicted else 'secure'
     with open(f'./data/{id}.json', 'r') as f:
         d = json.load(f)
 
@@ -42,7 +46,6 @@ async def scrape_website(id, url: str, visited: set, depth=0) -> list[str]:
     if depth >= DEPTH_LIMIT or url in visited:
         return
 
-    print(f'Scraping {url} at depth {depth}', flush=True)
     domain = url.split('//')[1]
     visited.add(url)
     email = r'[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'
