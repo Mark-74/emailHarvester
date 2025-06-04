@@ -116,7 +116,10 @@ async def scrape_dorks(id: str, domain: str, company: str) -> list[str]:
     res = search(query, num_results=50)
     values = []
     for url in res:
-        data = url.split('/in/')[1].split('-')
+        try:
+            data = url.split('/in/')[1].split('-')
+        except:
+            continue
 
         if len(data) < 2:
             continue
