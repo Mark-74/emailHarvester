@@ -46,8 +46,8 @@ def save_data(id: str, emails: list[str], predicted: bool = False, status: str =
     with open(f'./data/{id}/status.json', 'r') as f:
         d = json.load(f)
 
-        values = [v.lower().strip() for v in emails]
-        values.extend(d['emails'][predicted])
+        values = [v.lower().strip() for v in d['emails'][predicted]]
+        values.extend(emails)
         values = list(dict.fromkeys(values))
 
         d['emails'][predicted] = values
