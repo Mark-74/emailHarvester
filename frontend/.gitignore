@@ -169,4 +169,4 @@ __pycache__
 compile_commands.json
 
 # === Rules for env ===
-env/*
+env/

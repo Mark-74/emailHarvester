@@ -11,26 +11,29 @@ async def handle_request(id: str, domain: str, company: str):
     await scrape_dorks(id, domain, company)
     await scrape_website(id, f'https://{domain}', set())
 
-    save_data(id, [], 'completed')
+    save_data(id, [], status='completed')
 
 def init_data(id: str):
     data = {
         'status': 'pending',
-        'emails': [],
+        'emails': {
+            True: [],
+            False: []
+        },
         'index': 0
     }
 
     json.dump(data, open(f'./data/{id}.json', 'w'))
     
-def save_data(id: str, emails: list[str], status: str = 'pending'):
+def save_data(id: str, emails: list[str], predicted: bool = True, status: str = 'pending'):
     with open(f'./data/{id}.json', 'r') as f:
         d = json.load(f)
 
         values = [v.lower().strip() for v in emails]
-        values.extend(d['emails'])
+        values.extend(d['emails'][predicted])
         values = list(set(values))
 
-        d['emails'] = values
+        d['emails'][predicted] = values
         d['status'] = status
 
     json.dump(d, open(f'./data/{id}.json', 'w'))
@@ -104,7 +107,7 @@ async def scrape_dorks(id: str, domain: str, company: str) -> list[str]:
 
         values.extend(mails)
     
-    save_data(id, values)
+    save_data(id, values, predicted=True)
 
 if __name__ == "__main__":
     import asyncio, os

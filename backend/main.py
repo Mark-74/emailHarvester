@@ -44,12 +44,8 @@ def fetch():
     if not isinstance(idx, int):
         return jsonify({"error": "No data found for the given ID"}), 404
 
-    if status == 'completed':
-        idx = len(emails)
-        return jsonify(emails[idx:]), 418
-
     if idx >= len(emails):
-        return jsonify([]), 200
+        return jsonify([]), 200 if status == 'pending' else 418
 
     d['index'] = len(emails)
     json.dump(d, open(f'./data/{id}.json', 'w'))
