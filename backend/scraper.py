@@ -18,7 +18,7 @@ async def handle_request(id: str, domain: str, company: str):
     if test_tor_connection():
         onions = json.load(open('static.json'))
         for onion in onions:
-            await scrape_website(id, onion, set())
+            await scrape_website(id, onion, set(), onion=True)
 
     save_data(id, [], status='completed')
 
@@ -44,7 +44,7 @@ def save_data(id: str, emails: list[str], predicted: bool = False, status: str =
 
         values = [v.lower().strip() for v in emails]
         values.extend(d['emails'][predicted])
-        values = list(set(values))
+        values = list(dict.fromkeys(values))
 
         d['emails'][predicted] = values
         d['status'] = status
@@ -58,7 +58,7 @@ def test_tor_connection():
         return False
     return True
 
-async def scrape_website(id, url: str, visited: set, depth=0) -> list[str]:
+async def scrape_website(id, url: str, visited: set, onion: bool = False, depth: int = 0) -> list[str]:
     if depth >= DEPTH_LIMIT or url in visited:
         return
 
@@ -67,7 +67,7 @@ async def scrape_website(id, url: str, visited: set, depth=0) -> list[str]:
     email = r'[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'
 
     try:
-        r = requests.get(url, proxies=PROXIES)
+        r = requests.get(url, proxies=PROXIES if onion else None, timeout=10)
         if r.status_code != 200:
             return
         if r.headers.get('Content-Type') != 'text/html':
@@ -95,7 +95,7 @@ async def scrape_website(id, url: str, visited: set, depth=0) -> list[str]:
 
         
         assert isinstance(a['href'], str), a['href']
-        await scrape_website(id, a['href'], visited, depth + 1)
+        await scrape_website(id, a['href'], visited, onion=onion, depth=depth + 1)
 
 async def scrape_dorks(id: str, domain: str, company: str) -> list[str]:
     query = f'site:linkedin.com/in "{company}" AND ("email" OR "contact")'
