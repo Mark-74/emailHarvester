@@ -2,10 +2,10 @@ import requests, json, re
 from bs4 import BeautifulSoup
 from googlesearch import search
 from urllib.parse import urlencode
-from checker import *
-from jsonio import init_data, save_data, load_data
+from utils.checker import *
+from utils.jsonio import init_data, save_data, load_data
 
-DEPTH_LIMIT = 10
+DEPTH_LIMIT = 4
 
 async def handle_request(id: str, domain: str, company: str):
     init_data(id)
@@ -18,24 +18,40 @@ async def handle_request(id: str, domain: str, company: str):
         for onion in onions:
             await scrape_website(id, onion, set(), onion=True)
 
+    smtps = get_mail_from_domain(domain)
     data, index = load_data(id)
+    secured = []
     try:
         pattern = verify_pattern(data['emails']['secure'], data['emails']['predicted'])
-        matches = []
-        for i in data['emails']['predicted']:
-            if re.match(pattern, i.split('@')[0]):
-                matches.append(i)
-        
-        smtps = get_mail_from_domain(domain)
-        secured = data['emails']['secure']
-        for smtp in smtps:
-            for email in matches:
-                if verify_email(email, smtp):
-                    secured.append(email)
-        data['emails']['secure'] = secured
-    except:
-        pass
+        if pattern:
+            matches = []
+            for i in data['emails']['predicted']:
+                if re.match(pattern, i.split('@')[0]):
+                    matches.append(i)
+            
+            for smtp in smtps:
+                for email in matches:
+                    if verify_email(email, smtp):
+                        secured.append(email)
+        else:
+            predicted = data['emails']['predicted'][:3]
+            for i in range(len(predicted)):
+                found = False
+                for smtp in smtps:
+                    if verify_email(predicted[i], smtp):
+                        secured.append(predicted[i::i])
+                        found = True
+                        break
+                
+                if found:
+                    break
 
+    except Exception as e:
+        print(f"Error during verification: {e}", flush=True)
+        pass
+    
+    if len(secured) > 0:
+        data['emails']['secure'].extend(secured)
     save_data(id, data['emails']['secure'], status='completed')
 
 

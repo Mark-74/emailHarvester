@@ -32,7 +32,7 @@ def verify_email(email: str, smtp: str) -> bool:
     server.set_debuglevel(0)
 
     server.helo()
-    server.mail(email)
+    server.mail('test@example.it')
     code, message = server.rcpt(email)
     server.quit()
 
@@ -40,7 +40,7 @@ def verify_email(email: str, smtp: str) -> bool:
 
 
 def verify_pattern(secure: list[str], predicted: list[str]):
-    if not secure or not predicted:
+    if not isinstance(secure, list) or not isinstance(predicted, list):
         return
 
     for email in secure:
