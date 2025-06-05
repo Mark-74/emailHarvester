@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,10 +9,7 @@
   <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Google Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
   <style>
     html,
     body {
@@ -19,68 +17,72 @@
       margin: 0;
       padding: 0;
     }
+
     body {
       display: flex;
       flex-direction: column;
       font-family: 'Roboto', sans-serif;
       background-color: #f1f3f5;
     }
+
     main {
       flex: 1;
     }
+
     .hero {
       background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
       color: #ffffff;
       padding: 5rem 0;
       text-align: center;
     }
+
     .hero h1 {
       font-weight: 700;
       font-size: 3.5rem;
       margin-bottom: 0.5rem;
     }
+
     .hero p {
       font-weight: 300;
       font-size: 1.25rem;
     }
+
     .form-container {
       margin-top: -3rem;
       z-index: 10;
       position: relative;
     }
+
     .card-form {
       border-radius: 1rem;
       box-shadow: 0 2rem 3rem rgba(0, 0, 0, 0.1);
     }
+
     footer {
       background-color: #343a40;
       color: #ced4da;
       text-align: center;
       padding: 1.5rem 0;
     }
+
     footer a {
       color: #adb5bd;
       text-decoration: none;
     }
+
     footer a:hover {
       color: #ffffff;
     }
   </style>
 </head>
+
 <body>
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
     <div class="container">
       <a class="navbar-brand fw-bold" href="#">EmailHarvester</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
@@ -122,14 +124,8 @@
                 <div class="row g-3 mb-3">
                   <div class="col-12">
                     <div class="form-floating">
-                      <input
-                        type="text"
-                        class="form-control form-control-lg"
-                        id="companyInput"
-                        name="company"
-                        placeholder="Example Inc."
-                        required
-                      />
+                      <input type="text" class="form-control form-control-lg" id="companyInput" name="company"
+                        placeholder="Example Inc." required />
                       <label for="companyInput">Company Name</label>
                     </div>
                   </div>
@@ -138,14 +134,8 @@
                 <div class="row g-3">
                   <div class="col-md-9">
                     <div class="form-floating">
-                      <input
-                        type="text"
-                        class="form-control form-control-lg"
-                        id="domainInput"
-                        name="domain"
-                        placeholder="example.com"
-                        required
-                      />
+                      <input type="text" class="form-control form-control-lg" id="domainInput" name="domain"
+                        placeholder="example.com" required />
                       <label for="domainInput">e.g., example.com</label>
                     </div>
                   </div>
@@ -169,11 +159,8 @@
     <section id="how-it-works" class="container py-5">
       <div class="row align-items-center">
         <div class="col-md-6 order-md-2 mb-4 mb-md-0 text-center">
-          <img
-            src="https://placehold.co/600x400?text=Email+Graphic"
-            alt="Crawling illustration"
-            class="img-fluid rounded shadow"
-          />
+          <img src="https://placehold.co/600x400?text=Email+Graphic" alt="Crawling illustration"
+            class="img-fluid rounded shadow" />
         </div>
         <div class="col-md-6 order-md-1">
           <h2 class="fw-bold mb-3">How It Works</h2>
@@ -251,12 +238,12 @@
     </div>
   </footer>
 
+  <script>localStorage.clear();</script>
+
   <!-- Local Bootstrap JS & Dependencies -->
   <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
   <!-- Bootstrap Icons -->
-  <link
-    rel="stylesheet"
-    href="/bootstrap-icons/font/bootstrap-icons.css"
-  />
+  <link rel="stylesheet" href="/bootstrap-icons/font/bootstrap-icons.css" />
 </body>
+
 </html>

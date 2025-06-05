@@ -36,17 +36,11 @@ This project is a web application designed to harvest emails 🎯. It uses a Pyt
 
 ## 🖼️ Screenshots
 
-*(Add your screenshots here!)*
+**Main Page**
+![Home page](./static/homepage.png)
 
-**Example Screenshot 1: Main Page**
-```
-[Drag and drop your main page screenshot here or use a link]
-```
-
-**Example Screenshot 2: Results Page**
-```
-[Drag and drop your results page screenshot here or use a link]
-```
+**Results Page**
+![Result page](./static/resultpage.png)
 
 ## 🤝 Contributing
 
