@@ -16,6 +16,7 @@ app.use(express.json());
 // static files
 app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist')));
 app.use('/bootstrap-icons', express.static(path.join(__dirname, 'node_modules/bootstrap-icons')));
+app.use('/static', express.static(path.join(__dirname, 'static')));
 app.set('views', path.join(__dirname, 'templates'));
 
 // routes

@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 from utils.checker import *
 from utils.jsonio import init_data, save_data, load_data
 
-DEPTH_LIMIT = 4
+DEPTH_LIMIT = 10
 
 async def handle_request(id: str, domain: str, company: str):
     init_data(id)
