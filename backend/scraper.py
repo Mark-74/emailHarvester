@@ -62,7 +62,7 @@ def test_tor_connection():
         return False
     return True
 
-async def scrape_website(id, url: str, visited: set, onion: bool = False, depth: int = 0) -> list[str]:
+async def scrape_website(id, url: str, visited: set, onion: bool = False, depth: int = 0):
     if depth >= DEPTH_LIMIT or url in visited:
         return
 
@@ -101,7 +101,7 @@ async def scrape_website(id, url: str, visited: set, onion: bool = False, depth:
         assert isinstance(a['href'], str), a['href']
         await scrape_website(id, a['href'], visited, onion=onion, depth=depth + 1)
 
-async def scrape_dorks(id: str, domain: str, company: str) -> list[str]:
+async def scrape_dorks(id: str, domain: str, company: str):
     query = f'site:linkedin.com/in "{company}" AND ("email" OR "contact")'
     url = f"https://www.google.com/search?{urlencode({'q': query})}"
 
@@ -134,3 +134,4 @@ async def scrape_dorks(id: str, domain: str, company: str) -> list[str]:
         values.extend(mails)
     
     save_data(id, values, predicted=True)
+
