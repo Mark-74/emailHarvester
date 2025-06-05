@@ -2,7 +2,7 @@ import json, asyncio
 import threading
 from uuid import uuid4
 from flask import Flask, request, jsonify
-from scraper import handle_request
+from utils.scraper import handle_request
 
 app = Flask(__name__)
 

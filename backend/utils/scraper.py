@@ -1,13 +1,11 @@
-import requests, json, re, os
+import requests, json, re
 from bs4 import BeautifulSoup
 from googlesearch import search
 from urllib.parse import urlencode
+from checker import *
+from jsonio import init_data, save_data, load_data
 
 DEPTH_LIMIT = 10
-PROXIES = {
-    'http':  'socks5h://localhost:9050',
-    'https': 'socks5h://localhost:9050'
-}
 
 async def handle_request(id: str, domain: str, company: str):
     init_data(id)
@@ -20,47 +18,26 @@ async def handle_request(id: str, domain: str, company: str):
         for onion in onions:
             await scrape_website(id, onion, set(), onion=True)
 
-    save_data(id, [], status='completed')
-
-def init_data(id: str):
-    os.makedirs(f'./data/{id}', exist_ok=True)
-
-    data = {
-        'status': 'pending',
-        'emails': {
-            'secure': [],
-            'predicted': []
-        }
-    }
-    
-    json.dump(data, open(f'./data/{id}/status.json', 'w'))
-
-    data = {
-        'secure': 0,
-        'predicted': 0
-    }
-    json.dump(data, open(f'./data/{id}/index.json', 'w'))
-    
-def save_data(id: str, emails: list[str], predicted: bool = False, status: str = 'pending'):
-    predicted = 'predicted' if predicted else 'secure'
-    with open(f'./data/{id}/status.json', 'r') as f:
-        d = json.load(f)
-
-        values = [v.lower().strip() for v in d['emails'][predicted]]
-        values.extend(emails)
-        values = list(dict.fromkeys(values))
-
-        d['emails'][predicted] = values
-        d['status'] = status
-
-    json.dump(d, open(f'./data/{id}/status.json', 'w'))
-
-def test_tor_connection():
+    data, index = load_data(id)
     try:
-        requests.get('http://httpbin.org/ip', proxies=PROXIES)
+        pattern = verify_pattern(data['emails']['secure'], data['emails']['predicted'])
+        matches = []
+        for i in data['emails']['predicted']:
+            if re.match(pattern, i.split('@')[0]):
+                matches.append(i)
+        
+        smtps = get_mail_from_domain(domain)
+        secured = data['emails']['secure']
+        for smtp in smtps:
+            for email in matches:
+                if verify_email(email, smtp):
+                    secured.append(email)
+        data['emails']['secure'] = secured
     except:
-        return False
-    return True
+        pass
+
+    save_data(id, data['emails']['secure'], status='completed')
+
 
 async def scrape_website(id, url: str, visited: set, onion: bool = False, depth: int = 0):
     if depth >= DEPTH_LIMIT or url in visited:
@@ -134,4 +111,3 @@ async def scrape_dorks(id: str, domain: str, company: str):
         values.extend(mails)
     
     save_data(id, values, predicted=True)
-
