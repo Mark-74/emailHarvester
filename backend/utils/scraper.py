@@ -19,7 +19,7 @@ async def handle_request(id: str, domain: str, company: str):
             await scrape_website(id, onion, set(), onion=True)
 
     smtps = get_mail_from_domain(domain)
-    data, index = load_data(id)
+    data, _ = load_data(id)
     secured = []
     try:
         pattern = verify_pattern(data['emails']['secure'], data['emails']['predicted'])
@@ -39,7 +39,7 @@ async def handle_request(id: str, domain: str, company: str):
                 found = False
                 for smtp in smtps:
                     if verify_email(predicted[i], smtp):
-                        secured.append(predicted[i::i])
+                        secured.extend(data['emails']['predicted'][i::3+i])
                         found = True
                         break
                 
