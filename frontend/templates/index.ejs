@@ -119,7 +119,7 @@
           <div class="card card-form p-4">
             <div class="card-body">
               <h3 class="card-title fw-bold text-center mb-4">Enter Your Details</h3>
-              <form action="/results" method="GET" id="domainForm">
+              <form id="domainForm">
                 <!-- Company Name Input -->
                 <div class="row g-3 mb-3">
                   <div class="col-12">
@@ -130,18 +130,21 @@
                     </div>
                   </div>
                 </div>
-                <!-- Domain Input & Submit Button -->
+                <!-- Domain Input & Buttons -->
                 <div class="row g-3">
-                  <div class="col-md-9">
+                  <div class="col-md-6">
                     <div class="form-floating">
                       <input type="text" class="form-control form-control-lg" id="domainInput" name="domain"
                         placeholder="example.com" required />
                       <label for="domainInput">e.g., example.com</label>
                     </div>
                   </div>
-                  <div class="col-md-3 d-grid">
-                    <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                  <div class="col-md-6 d-flex gap-2">
+                    <button type="button" class="btn btn-primary btn-lg flex-fill" id="submitBtn">
                       Search Emails
+                    </button>
+                    <button type="button" class="btn btn-danger btn-lg flex-fill" id="breachBtn">
+                      Check Breach
                     </button>
                   </div>
                 </div>
@@ -239,7 +242,36 @@
     </div>
   </footer>
 
-  <script>localStorage.clear();</script>
+  <script>
+    document.getElementById('submitBtn').addEventListener('click', () => {
+      const domainInput = document.getElementById('domainInput');
+      const companyInput = document.getElementById('companyInput');
+      // both required for email search:
+      if (!domainInput.value.trim() || !companyInput.value.trim()) {
+        if (!domainInput.value.trim()) domainInput.reportValidity();
+        if (!companyInput.value.trim()) companyInput.reportValidity();
+        return;
+      }
+      const params = new URLSearchParams({
+        domain: domainInput.value.trim(),
+        company: companyInput.value.trim()
+      });
+      window.location.href = `/results?${params.toString()}`;
+    });
+
+    document.getElementById('breachBtn').addEventListener('click', () => {
+      const domainInput = document.getElementById('domainInput');
+      // only domain required for breach:
+      if (!domainInput.value.trim()) {
+        domainInput.reportValidity();
+        return;
+      }
+      const params = new URLSearchParams({ domain: domainInput.value.trim() });
+      window.location.href = `/breach?${params.toString()}`;
+    });
+
+    localStorage.clear();
+  </script>
 
   <!-- Local Bootstrap JS & Dependencies -->
   <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>

@@ -57,8 +57,8 @@ def fetch():
 
 @app.route('/api/breach', methods=['POST'])
 def breach():
-    company = request.json.get('company').lower()
-    return jsonify({'status': 'breached' if is_breached(company) else 'safe'})
+    domain = request.json.get('domain').lower()
+    return jsonify({'status': 'breached' if is_breached(domain) else 'safe'})
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)

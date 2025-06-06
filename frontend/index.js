@@ -36,8 +36,20 @@ app.get('/results', async (req, res) => {
 });
 
 app.get('/breach', async (req, res) => {
-    const company_name = req.query.company;
-    res.render('breach', { company: company_name });
+    const domain = req.query.domain;
+
+    if (!domain) {
+        return res.redirect('/');
+    }
+
+    const response = await fetch('http://backend:5000/api/breach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 'domain': domain })
+    });
+    const data = await response.json();
+
+    res.render('breach', { domain: domain, status: data.status });
 });
 
 app.post('/api/search', async (req, res) => {

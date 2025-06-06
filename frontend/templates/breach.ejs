@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Breach Status • <%= domain %></title>
+  <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f1f3f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .hero {
+      padding: 4rem 0;
+      color: white;
+      text-align: center;
+    }
+    .hero-safe {
+      background: linear-gradient(135deg, #28a745, #218838);
+    }
+    .hero-breached {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+    }
+    .hero h1 {
+      font-weight: 700;
+      font-size: 2.5rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-top: 1rem;
+    }
+    main {
+      flex: 1;
+      padding: 2rem 0;
+    }
+    .result-card {
+      background-color: white;
+      border-radius: 1rem;
+      box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      text-align: center;
+    }
+    .result-card i {
+      font-size: 3rem;
+    }
+    .result-card .domain {
+      font-weight: 600;
+    }
+    footer {
+      background-color: #343a40;
+      color: #ced4da;
+      text-align: center;
+      padding: 1.5rem 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/">EmailHarvester</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero <%= status === 'breached' ? 'hero-breached' : 'hero-safe' %>">
+    <div class="container">
+      <h1>
+        Domain Status:
+        <%= status === 'breached' ? 'Breached' : 'Safe' %>
+      </h1>
+      <p><strong><%= domain %></strong> has been marked as
+        <%= status === 'breached' ? 'involved in a known breach.' : 'not found in any known breaches.' %>
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <main>
+    <div class="container">
+      <div class="result-card mx-auto col-md-6">
+        <i class="bi <%= status === 'breached' ? 'bi-shield-exclamation text-danger' : 'bi-shield-check text-success' %>"></i>
+        <h3 class="mt-3"><%= domain %></h3>
+        <p class="lead mt-2">
+          This domain is
+          <strong class="<%= status === 'breached' ? 'text-danger' : 'text-success' %>">
+            <%= status === 'breached' ? 'breached' : 'safe' %>
+          </strong>.
+        </p>
+        <a href="/" class="btn btn-outline-primary mt-3">Check Another Domain</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p class="mb-1">&copy; 2025 EmailHarvester. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="/bootstrap-icons/font/bootstrap-icons.css" />
+</body>
+</html>
