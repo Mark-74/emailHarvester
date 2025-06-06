@@ -3,6 +3,7 @@ import threading
 from uuid import uuid4
 from flask import Flask, request, jsonify
 from utils.scraper import handle_request
+from utils.breaches import is_breached
 
 app = Flask(__name__)
 
@@ -53,6 +54,11 @@ def fetch():
     index = {'secure': secidx, 'predicted': predidx}
     json.dump(index, open(f'./data/{id}/index.json', 'w'))
     return jsonify({'secure': secure, 'predicted': predicted}), 200 if status == 'pending' else 418
+
+@app.route('/api/breach', methods=['POST'])
+def breach():
+    company = request.json.get('company').lower()
+    return jsonify({'status': 'breached' if is_breached(company) else 'safe'})
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", debug=True)
