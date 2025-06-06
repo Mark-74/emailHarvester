@@ -49,7 +49,7 @@ app.get('/breach', async (req, res) => {
     });
     const data = await response.json();
 
-    res.render('breach', { domain: domain, status: data.status });
+    res.render('breach', { domain: domain, status: data.status, link: `https://www.breachsense.com/check-your-exposure/?domain=${domain}` });
 });
 
 app.post('/api/search', async (req, res) => {

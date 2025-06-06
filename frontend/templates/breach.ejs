@@ -54,6 +54,16 @@
     .result-card .domain {
       font-weight: 600;
     }
+    /* Updated Learn More button style */
+    .learn-more-btn {
+      background-color: #ffffff;
+      color: #000000;
+      border: none;
+    }
+    .learn-more-btn:hover {
+      background-color: #e2e2e2;
+      color: #000000;
+    }
     footer {
       background-color: #343a40;
       color: #ced4da;
@@ -77,7 +87,7 @@
         Domain Status:
         <%= status === 'breached' ? 'Breached' : 'Safe' %>
       </h1>
-      <p><strong><%= domain %></strong> has been marked as
+      <p><strong><%= domain %></strong> has been
         <%= status === 'breached' ? 'involved in a known breach.' : 'not found in any known breaches.' %>
       </p>
     </div>
@@ -95,7 +105,11 @@
             <%= status === 'breached' ? 'breached' : 'safe' %>
           </strong>.
         </p>
-        <a href="/" class="btn btn-outline-primary mt-3">Check Another Domain</a>
+        <!-- Always show Learn More link with updated style -->
+        <a href="<%= link %>" target="_blank" class="btn btn-outline-dark btn-lg mt-3">
+            Learn More
+        </a>
+        <a href="/" class="btn btn-outline-primary btn-lg mt-3">Check Another Domain</a>
       </div>
     </div>
   </main>
