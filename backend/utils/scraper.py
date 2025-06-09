@@ -1,6 +1,7 @@
 import requests, json, re
 from bs4 import BeautifulSoup
 from googlesearch import search
+from duckduckgo_search import DDGS
 from urllib.parse import urlencode
 from utils.checker import *
 from utils.jsonio import init_data, save_data, load_data
@@ -10,7 +11,8 @@ DEPTH_LIMIT = 10
 async def handle_request(id: str, domain: str, company: str):
     init_data(id)
 
-    await scrape_dorks(id, domain, company)
+    await scrape_dorks_google(id, domain, company)
+    await scrape_dorks_duck(id, domain, company)
     await scrape_website(id, f'https://{domain}', set())
 
     if test_tor_connection():
@@ -94,7 +96,7 @@ async def scrape_website(id, url: str, visited: set, onion: bool = False, depth:
         assert isinstance(a['href'], str), a['href']
         await scrape_website(id, a['href'], visited, onion=onion, depth=depth + 1)
 
-async def scrape_dorks(id: str, domain: str, company: str):
+async def scrape_dorks_google(id: str, domain: str, company: str):
     query = f'site:linkedin.com/in "{company}" AND ("email" OR "contact")'
     url = f"https://www.google.com/search?{urlencode({'q': query})}"
 
@@ -111,6 +113,40 @@ async def scrape_dorks(id: str, domain: str, company: str):
     for url in res:
         try:
             data = url.split('/in/')[1].split('-')
+        except:
+            continue
+
+        if len(data) < 2:
+            continue
+        firstname, lastname = data[:2]
+
+        mails = [
+            f'{firstname}.{lastname}@{domain}',
+            f'{firstname[0]}.{lastname}@{domain}',
+            f'{firstname}{lastname}@{domain}',
+        ]
+
+        values.extend(mails)
+    
+    save_data(id, values, predicted=True)
+
+async def scrape_dorks_duck(id: str, domain: str, company: str):
+    query = f'site:linkedin.com/in "{company}" AND ("email" OR "contact")'
+    url = f"https://duckduckgo.com/?{urlencode({'q': query})}"
+
+    try:
+        r = requests.get(url)
+        if r.status_code != 200:
+            print(f"Failed to fetch dorks for {company}. Status code: {r.status_code}", flush=True)
+            return
+    except:
+        return
+
+    res = DDGS().text(query, max_results=50)
+    values = []
+    for url in res:
+        try:
+            data = url['href'].split('/in/')[1].split('-')
         except:
             continue
 
