@@ -2,7 +2,16 @@ FROM python:3.13-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache tor
+RUN apk add --no-cache \
+    firefox \
+    geckodriver \
+    bash \
+    xvfb \
+    dbus \
+    ttf-freefont \
+    mesa-gl \
+    tor
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 

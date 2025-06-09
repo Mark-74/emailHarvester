@@ -102,32 +102,6 @@ app.get('/api/fetch', async (req, res) => {
     }
 });
 
-app.post('/api/breach', async (req, res) => {
-    const company_name = req.body.company;
-    if (!company_name) {
-        return res.status(400).send('Company name is required');
-    }
-
-    let status;
-    try {
-        const response = await fetch('http://backend:5000/api/breach', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 'company': company_name })
-        });
-        const data = await response.json();
-        status = data.status;
-
-        if (!status) {
-            return res.status(500).send('Failed to fetch data');
-        }
-    } catch (error) {
-        return res.status(500).json({error: error.message});
-    }
-
-    res.json({ status });
-});
-
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });

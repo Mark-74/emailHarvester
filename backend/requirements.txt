@@ -1,7 +1,9 @@
 flask
 flask[async]
 googlesearch-python
+duckduckgo-search
 beautifulsoup4
 tqdm
 requests
 dnspython
+selenium
