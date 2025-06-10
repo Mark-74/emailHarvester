@@ -6,4 +6,3 @@ beautifulsoup4
 tqdm
 requests
 dnspython
-selenium
