@@ -13,5 +13,16 @@ services:
     build: 
       context: ./backend
     container_name: backend
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
     restart: unless-stopped
 
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    env_file:
+      - .env
+    restart: unless-stopped
+    command: mongod --quiet --logpath /dev/null

@@ -1,45 +1,26 @@
-import os, json
+from pymongo.database import Database
 
-def init_data(id: str):
-    os.makedirs(f'/app/data/{id}', exist_ok=True)
-
-    data = {
+def init_data(id: str, db: Database):
+    db['results'].insert_one({
+        'id': id,
         'status': 'pending',
         'emails': {
             'secure': [],
             'predicted': []
         }
-    }
+    })
 
-    json.dump(data, open(f'/app/data/{id}/status.json', 'w'))
-
-    data = {
-        'secure': 0,
-        'predicted': 0
-    }
-    json.dump(data, open(f'/app/data/{id}/index.json', 'w'))
-
-def save_data(id: str, emails: list[str], predicted: bool = False, status: str = 'pending'):
+def save_data(id: str, emails: list[str], db: Database, predicted: bool = False, status: str = 'pending'):
     predicted = 'predicted' if predicted else 'secure'
-    with open(f'/app/data/{id}/status.json', 'r') as f:
-        d = json.load(f)
+    data = db['results'].find_one({"id": id})
+    values = []
+    if data:
+        values = [v.lower().strip() for v in data['emails'][predicted]]
+    values.extend(emails)
+    values = list(dict.fromkeys(values))
 
-        values = [v.lower().strip() for v in d['emails'][predicted]]
-        values.extend(emails)
-        values = list(dict.fromkeys(values))
+    db['results'].update_one({"id": id}, {"$set": {f'emails.{predicted}': values, 'status': status}})
 
-        d['emails'][predicted] = values
-        d['status'] = status
 
-    json.dump(d, open(f'/app/data/{id}/status.json', 'w'))
-
-def load_data(id: str):
-    try:
-        with open(f'/app/data/{id}/status.json', 'r') as f:
-            data = json.load(f)
-        with open(f'/app/data/{id}/index.json', 'r') as f:
-            index = json.load(f)
-    except:
-        return None, None
-
-    return data, index
+def load_data(id: str, db: Database):
+    return db['results'].find_one({"id": id})

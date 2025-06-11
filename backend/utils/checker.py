@@ -33,7 +33,7 @@ def verify_email(email: str, smtp: str) -> bool:
 
     server.helo()
     server.mail('test@example.it')
-    code, message = server.rcpt(email)
+    code, _ = server.rcpt(email)
     server.quit()
 
     return code == 250
